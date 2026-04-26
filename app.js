@@ -10,6 +10,25 @@ function notifyUE(eventName, data = {}) {
     }
 }
 
+// Audio Context for Sounds
+let audioCtx;
+let infraOsc;
+function initAudio() {
+    if(audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Continuous Infra-sound (Prologue)
+    infraOsc = audioCtx.createOscillator();
+    infraOsc.type = 'sine';
+    infraOsc.frequency.value = 25; // Infrasound feeling
+    const gain = audioCtx.createGain();
+    gain.gain.value = 0.5;
+    infraOsc.connect(gain);
+    gain.connect(audioCtx.destination);
+    infraOsc.start();
+}
+window.addEventListener('click', initAudio, {once:true});
+
 // Stage Management
 function setStage(stageId) {
     document.querySelectorAll('.stage').forEach(el => el.classList.add('hidden'));
@@ -37,11 +56,15 @@ function initPrologue() {
     }, 2000);
 
     const btnAgree = document.getElementById('btn-agree');
-    btnAgree.onclick = () => {
+    const btnDecline = document.getElementById('btn-decline');
+
+    const triggerAgree = () => {
         document.body.classList.add('shake');
+        document.body.classList.add('tear'); // Glitch effect
         
         // Wait a bit, then blackout
         setTimeout(() => {
+            document.body.classList.remove('tear');
             document.getElementById('blackout-overlay').style.opacity = '1';
             
             setTimeout(() => {
@@ -50,7 +73,30 @@ function initPrologue() {
                 notifyUE('Prologue_End');
             }, 2000);
             
-        }, 1500);
+        }, 300);
+    };
+
+    btnAgree.onclick = triggerAgree;
+
+    let declineClicks = 0;
+    btnDecline.onclick = () => {
+        declineClicks++;
+        if (declineClicks === 1) {
+            // Spooky glitch effect removed
+            
+            // Change both buttons to YES
+            btnDecline.innerText = '예';
+            btnDecline.style.color = '#aa0000';
+            btnDecline.style.fontWeight = 'bold';
+            btnDecline.style.fontStyle = 'italic';
+            
+            btnAgree.innerText = '예';
+            btnAgree.style.color = '#aa0000';
+            btnAgree.style.fontWeight = 'bold';
+            btnAgree.style.fontStyle = 'italic';
+        } else {
+            triggerAgree();
+        }
     };
 }
 
@@ -98,6 +144,16 @@ function initTutorial() {
         pixelsErased += 100; // rough estimate
         if (pixelsErased > targetErased && !cleared) {
             checkClear();
+        }
+
+        // Subliminal Flash Logic
+        if(Math.random() < 0.03) {
+            const subliminal = document.getElementById('subliminal');
+            if(subliminal) {
+                subliminal.innerText = Math.random() > 0.5 ? "죽여줘" : "나야";
+                subliminal.classList.add('flash');
+                setTimeout(() => subliminal.classList.remove('flash'), 50);
+            }
         }
     }
 
@@ -168,17 +224,29 @@ function initPre2() {
         }
     }
 
+    knob.classList.add('bloody-hover');
+    secretText.classList.add('bloody-hover');
+
+    let centerX = 0;
+    let centerY = 0;
+
     knob.onmousedown = (e) => {
         if(isCleared) return;
         isDragging = true;
-        startY = e.clientY;
+        const rect = knob.getBoundingClientRect();
+        centerX = rect.left + rect.width / 2;
+        centerY = rect.top + rect.height / 2;
     };
     
     window.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-        const deltaY = startY - e.clientY;
-        startY = e.clientY;
-        updateKnob(currentRotation + deltaY * 2);
+        const dy = e.clientY - centerY;
+        const dx = e.clientX - centerX;
+        let rad = Math.atan2(dy, dx);
+        let deg = rad * (180 / Math.PI);
+        // Adjust so the knob marker points exactly at the mouse cursor
+        deg = deg + 90; 
+        updateKnob(deg);
     });
 
     window.addEventListener('mouseup', () => {
@@ -231,6 +299,18 @@ function initPre3() {
             </div>
         `;
 
+        // Popup evasion logic: Only 20% of popups are evasive, and they move only once.
+        const isEvasive = Math.random() > 0.8;
+        let hasMoved = false;
+        
+        popup.addEventListener('mouseenter', () => {
+            if (isEvasive && !hasMoved) {
+                hasMoved = true;
+                popup.style.left = `${Math.max(10, Math.floor(Math.random() * maxWidth))}px`;
+                popup.style.top = `${Math.max(10, Math.floor(Math.random() * maxHeight))}px`;
+            }
+        });
+
         popup.querySelector('.close-btn').addEventListener('click', () => {
             popup.remove();
             popupsCleared++;
@@ -251,6 +331,26 @@ function initPre3() {
             setTimeout(createPopup, i * 100 + Math.random() * 50);
         }
     }, 1000);
+
+    // Mouse Speed Screen Tear
+    let lastMouseX = 0, lastMouseY = 0, lastTime = Date.now();
+    window.addEventListener('mousemove', (e) => {
+        if(popupsActive > 0) {
+            const now = Date.now();
+            const dt = now - lastTime || 1;
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            const speed = Math.sqrt(dx*dx + dy*dy) / dt;
+            
+            if(speed > 2.5 && !document.body.classList.contains('tear')) {
+                document.body.classList.add('tear');
+                setTimeout(() => document.body.classList.remove('tear'), 200);
+            }
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            lastTime = now;
+        }
+    });
 }
 
 // ---------------------------------------------
@@ -271,8 +371,9 @@ function initPre4() {
     document.getElementById('login-hint').classList.add('hidden');
 
     btn.onclick = () => {
-        if (input.value === '이지수') {
+        if (input.value === '이지수' || input.value === '이지수죽어') {
             notifyUE('Login_Success');
+            document.getElementById('fake-alert').classList.add('hidden');
             setStage('ending');
         } else {
             err.classList.remove('hidden');
@@ -280,6 +381,19 @@ function initPre4() {
         }
     };
     
+    input.addEventListener('input', (e) => {
+        if(Math.random() > 0.8 && !document.getElementById('fake-alert').classList.contains('active')) {
+            input.value += "죽어";
+            document.getElementById('fake-alert').classList.remove('hidden');
+            document.getElementById('fake-alert').classList.add('active');
+        }
+    });
+
+    document.getElementById('btn-ignore').onclick = () => {
+        document.getElementById('fake-alert').classList.add('hidden');
+        document.getElementById('fake-alert').classList.remove('active');
+    };
+
     input.onkeypress = (e) => {
         if(e.key === 'Enter') btn.click();
     }
@@ -289,37 +403,56 @@ function initPre4() {
 // Stage: Ending
 // ---------------------------------------------
 function initEnding() {
-    // Apply a quick glitch effect to entire screen
-    document.body.style.filter = 'hue-rotate(90deg) contrast(2) invert(1)';
-    setTimeout(() => { document.body.style.filter = 'none'; }, 200);
-
-    const popup = document.getElementById('ending-popup');
+    document.body.classList.add('is-blog');
+    
+    const listView = document.getElementById('blog-list-view');
+    const postView = document.getElementById('blog-post-view');
     const seq = document.getElementById('ending-sequence');
     const typingText = document.getElementById('typing-text');
+    const btnOpenLog = document.getElementById('btn-open-log');
+    const btnExit = document.getElementById('btn-exit');
     
-    popup.classList.remove('hidden');
+    // Reset state
+    listView.classList.remove('hidden');
+    postView.classList.add('hidden');
     seq.classList.add('hidden');
     typingText.innerHTML = '';
 
-    document.getElementById('btn-exit').onclick = () => {
-        popup.classList.add('hidden');
+    btnOpenLog.onclick = () => {
+        listView.classList.add('hidden');
+        postView.classList.remove('hidden');
+    };
+
+    btnExit.onclick = () => {
+        postView.classList.add('hidden');
         seq.classList.remove('hidden');
         
-        // Start typing
-        const textToType = "수칙 5. 야간 자율학습 중 머리 위에서 낡은 선풍기가 흔들리는 소리가 난다면, 절대 위를 쳐다보지 마십시오. 이미 늦었습니다.";
+        // Cosmic horror ending
+        document.body.classList.remove('is-blog'); // Strip blog style suddenly
+        document.body.style.transition = 'background-color 3s';
+        document.body.style.backgroundColor = '#200000'; // Blood red screen
+
+        // Start typing rules with protagonist name
+        const textToType = "수칙 5. 야간 자율학습 중 머리 위에서 낡은 선풍기가 흔들리는 소리가 난다면, 절대 위를 쳐다보지 마십시오. 당신은 이미 사이트의 일부가 되었습니다. 환영합니다, 이지수.";
         let i = 0;
         
         const typeInterval = setInterval(() => {
             typingText.innerHTML = textToType.substring(0, i);
             i++;
+            
+            // Severe distortion when typing finishes
             if (i > textToType.length) {
                 clearInterval(typeInterval);
                 
-                // Final blackout
+                // Wait 3 seconds before shattering and blackout so the player can read
                 setTimeout(() => {
-                    document.getElementById('blackout-overlay').style.opacity = '1';
-                    notifyUE('Ending_Blackout');
-                }, 1500);
+                    document.body.classList.add('broken-ui'); // Shatter UI
+                    
+                    setTimeout(() => {
+                        document.getElementById('blackout-overlay').style.opacity = '1';
+                        notifyUE('Ending_Blackout');
+                    }, 500);
+                }, 3000);
             }
         }, 80); // Speed of typing
     };

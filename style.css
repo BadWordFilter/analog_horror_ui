@@ -8,8 +8,8 @@
 body, html {
     width: 100%;
     height: 100%;
-    background-color: #0a0a08; /* Low lightness, muddy dark */
-    color: #6a0d0d;
+    background-color: #1a1a18; /* slightly lighter dark background */
+    color: #cc3333; /* Brighter red for better visibility */
     font-family: 'Gulim', '굴림', 'Dotum', '돋움', monospace;
     overflow: hidden;
     user-select: none;
@@ -32,7 +32,7 @@ body.shake {
     position: fixed;
     top: -50%; left: -50%; width: 200%; height: 200%;
     background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
-    opacity: 0.12;
+    opacity: 0.08; /* Reduced opacity to be less muddy */
     pointer-events: none;
     z-index: 9998;
     animation: noiseAnim 0.08s steps(2) infinite;
@@ -96,14 +96,14 @@ header {
 }
 
 header h1 {
-    font-size: 24px;
-    color: #5a0505;
-    text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+    font-size: 26px;
+    color: #dd1111; /* Brighter red */
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
     letter-spacing: 15px;
-    border: 1px solid #2a0000;
-    background-color: #0d0000;
-    padding: 8px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    border: 1px solid #4a0000;
+    background-color: #1a0000;
+    padding: 10px;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
 }
 
 .separator {
@@ -122,8 +122,8 @@ header h1 {
 
 .subtitle {
     margin-top: 10px;
-    font-size: 12px;
-    color: #444;
+    font-size: 14px;
+    color: #999; /* Brighter subtitle */
     letter-spacing: 2px;
 }
 
@@ -171,11 +171,11 @@ main {
     width: 80%;
     max-width: 700px;
     border-collapse: collapse;
-    font-size: 14px;
-    color: #a09d8e;
-    background: rgba(0,0,0,0.4);
-    border-top: 2px solid #5a0505;
-    border-bottom: 2px solid #5a0505;
+    font-size: 15px;
+    color: #d4d0c8; /* Brighter table text */
+    background: rgba(20,20,20,0.6);
+    border-top: 2px solid #8a0505;
+    border-bottom: 2px solid #8a0505;
 }
 .bbs-table th {
     border-bottom: 1px dashed #555;
@@ -453,17 +453,19 @@ main {
 
 /* Ending Sequence */
 .blood-text {
-    color: #ff0000;
+    color: #fff;
+    text-shadow: 0 0 5px #f00, 0 0 10px #f00;
     font-weight: bold;
-    font-size: 18px;
-    text-shadow: 0 0 10px #ff0000;
+    font-size: 1.2rem;
     margin-bottom: 20px;
     text-align: center;
 }
 .typing-text {
-    color: #d0d0d0;
-    font-size: 16px;
-    line-height: 1.6;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px #f00, 0 0 15px #f00;
+    white-space: pre-wrap;
     min-height: 50px;
 }
 .typing-text::after {
@@ -517,3 +519,136 @@ main {
     border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
 }
+
+/* --------------------------
+   Full 90s Blog Override
+--------------------------- */
+body.is-blog {
+    background: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+body.is-blog #main-ui-container, body.is-blog .container {
+    background: none;
+    border: none;
+    max-width: 900px;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+body.is-blog header {
+    display: none;
+}
+body.is-blog .scanlines, body.is-blog .noise {
+    opacity: 0.05; /* drastically reduce noise to make the blog look clean but still eerie */
+}
+
+/* Old Blog Layout */
+.old-blog-layout {
+    display: flex;
+    background: #fff;
+    border: 1px solid #999;
+    font-family: 'Gulim', '굴림', sans-serif;
+    color: #333;
+    min-height: 500px;
+    text-align: left;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 800px;
+    margin: 50px auto;
+}
+
+.blog-sidebar {
+    width: 200px;
+    background: #f4f4f4;
+    border-right: 1px dashed #ccc;
+    padding: 20px;
+}
+.profile-pic {
+    width: 100px; height: 120px;
+    background: #ccc; border: 1px solid #999;
+    margin: 0 auto 10px;
+    display: flex; justify-content: center; align-items: center;
+    color: #888; font-size: 12px;
+}
+.profile-name { text-align: center; margin: 0 0 5px; font-size: 14px; color: #000; }
+.visitor-count { text-align: center; font-size: 11px; margin-bottom: 20px; color: #666; }
+.blog-menu { list-style: none; padding: 0; margin: 0; font-size: 12px; }
+.blog-menu li { margin-bottom: 8px; cursor: pointer; color: #555; }
+.blog-menu li.active-menu { font-weight: bold; color: #0000aa; }
+
+.blog-main {
+    flex: 1;
+    padding: 20px 30px;
+}
+.blog-title-banner {
+    border-bottom: 2px solid #555;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.blog-title-banner h2 { margin: 0 0 5px; font-size: 22px; color: #333; text-shadow: none; }
+.blog-title-banner p { margin: 0; font-size: 12px; color: #777; }
+
+.blog-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; }
+.blog-table th { border-top: 2px solid #666; border-bottom: 1px solid #ccc; padding: 8px; background: #f9f9f9; color: #333; }
+.blog-table td { border-bottom: 1px dotted #ccc; padding: 10px 8px; color: #555; }
+.blog-row:hover { background: #f0f0ff; }
+.blog-title-link { font-weight: bold; color: #0000aa !important; text-decoration: underline; text-align: left; cursor: pointer; }
+
+/* Post View */
+.post-header { border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; }
+.post-title-text { margin: 0 0 5px; font-size: 16px; color: #000; }
+.post-meta { font-size: 11px; color: #888; }
+.post-content { font-size: 13px; line-height: 1.6; color: #222; min-height: 200px; }
+.post-footer { margin-top: 30px; text-align: right; border-top: 1px solid #ddd; padding-top: 10px; }
+.blog-btn { border: 1px solid #999; background: #eee; padding: 5px 15px; font-size: 12px; cursor: pointer; color: #333; }
+.blog-btn:hover { background: #ddd; }
+
+/* Stage 1: Subliminal */
+#subliminal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: transparent; color: #f00; display: flex; justify-content: center; align-items: center;
+    font-size: 15vw; font-weight: 900; z-index: 99999; opacity: 0; pointer-events: none;
+    font-family: '궁서', 'Gungsuh', serif;
+    text-shadow: 10px 10px 0 #000, -10px -10px 0 #000, 0 0 20px #f00;
+}
+.flash { animation: subliminal-flash 0.05s steps(1); }
+@keyframes subliminal-flash {
+    0% { opacity: 0.8; transform: scale(1.1) rotate(2deg); }
+    100% { opacity: 0; }
+}
+
+/* Stage 2 & 3: Tearing and Bloody Hover */
+@keyframes screen-tear-heavy {
+    0% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate(0); }
+    20% { clip-path: polygon(0 15%, 100% 15%, 100% 20%, 0 20%); transform: translate(-20px); filter: hue-rotate(90deg); }
+    40% { clip-path: polygon(0 60%, 100% 60%, 100% 65%, 0 65%); transform: translate(20px); filter: invert(1); }
+    60% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate(0); }
+    80% { clip-path: polygon(0 40%, 100% 40%, 100% 50%, 0 50%); transform: translate(-10px); }
+    100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: translate(0); }
+}
+.tear { animation: screen-tear-heavy 0.2s forwards; }
+
+.bloody-hover:hover {
+    color: #f00 !important;
+    text-shadow: 0 5px 5px #f00;
+    transform: scale(1.05);
+    transition: 0.1s;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="5" fill="red"/></svg>'), crosshair !important;
+}
+
+/* Ending: Broken UI */
+.broken-ui {
+    animation: shatter 0.5s forwards;
+}
+@keyframes shatter {
+    0% { transform: skew(0deg); filter: blur(0); }
+    20% { transform: skew(10deg) scale(1.1); filter: blur(2px) contrast(2); }
+    40% { transform: skew(-20deg) scale(0.9); clip-path: polygon(0 20%, 100% 0, 100% 80%, 0 100%); }
+    60% { transform: skew(30deg) translate(20px, -20px); clip-path: polygon(20% 0, 100% 20%, 80% 100%, 0 80%); }
+    100% { transform: scale(0); opacity: 0; }
+}
+
