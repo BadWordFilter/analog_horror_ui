@@ -1,0 +1,519 @@
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #0a0a08; /* Low lightness, muddy dark */
+    color: #6a0d0d;
+    font-family: 'Gulim', '굴림', 'Dotum', '돋움', monospace;
+    overflow: hidden;
+    user-select: none;
+    cursor: default;
+}
+
+body.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(4px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+    40%, 60% { transform: translate3d(8px, 0, 0); }
+}
+
+/* VHS Noise & Scanlines */
+.noise {
+    position: fixed;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 9998;
+    animation: noiseAnim 0.08s steps(2) infinite;
+}
+
+.scanlines {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0,0,0,0.25) 50%,
+        rgba(0,0,0,0.25)
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+@keyframes noiseAnim {
+    0% { transform: translate(0,0); }
+    10% { transform: translate(-1%, -1%); }
+    20% { transform: translate(1%, 1%); }
+    30% { transform: translate(-2%, 1%); }
+    40% { transform: translate(1%, -1%); }
+    50% { transform: translate(-1%, 2%); }
+    60% { transform: translate(2%, 0); }
+    70% { transform: translate(0, 2%); }
+    80% { transform: translate(-1%, 0); }
+    90% { transform: translate(2%, 1%); }
+    100% { transform: translate(0,0); }
+}
+
+#blackout-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: #000;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10000;
+    transition: opacity 2s ease-in-out;
+}
+
+/* Container */
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+}
+
+header {
+    width: 80%;
+    max-width: 600px;
+    margin-top: 40px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 24px;
+    color: #5a0505;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+    letter-spacing: 15px;
+    border: 1px solid #2a0000;
+    background-color: #0d0000;
+    padding: 8px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+.separator {
+    width: 100%;
+    height: 3px;
+    background: repeating-linear-gradient(
+        45deg,
+        #4a0000,
+        #4a0000 10px,
+        #0d0000 10px,
+        #0d0000 20px
+    );
+    margin-top: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.subtitle {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #444;
+    letter-spacing: 2px;
+}
+
+main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.stage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Debug Nav */
+#debug-nav {
+    position: fixed;
+    bottom: 0; left: 0;
+    background: rgba(0,0,0,0.8);
+    padding: 5px;
+    z-index: 20000;
+    display: flex;
+    gap: 5px;
+}
+#debug-nav button {
+    background: #333; color: #fff; border: 1px solid #666; padding: 5px; cursor: pointer;
+}
+
+/* Prologue BBS */
+.bbs-table {
+    width: 80%;
+    max-width: 700px;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: #a09d8e;
+    background: rgba(0,0,0,0.4);
+    border-top: 2px solid #5a0505;
+    border-bottom: 2px solid #5a0505;
+}
+.bbs-table th {
+    border-bottom: 1px dashed #555;
+    padding: 8px;
+    text-align: center;
+    color: #888;
+}
+.bbs-table td {
+    padding: 8px;
+    border-bottom: 1px dotted #333;
+    text-align: center;
+}
+.bbs-table td:nth-child(2) {
+    text-align: left;
+}
+
+/* 90s Popup Windows - Muddy & Corrupted */
+.system-popup {
+    position: absolute;
+    background-color: #c0c0c0; /* Classic Windows grey */
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #404040;
+    border-bottom: 2px solid #404040;
+    width: 320px;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.6);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.popup-header {
+    background: linear-gradient(90deg, #000080, #1084d0);
+    color: white;
+    padding: 3px 4px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.creepy-popup .popup-header {
+    background: linear-gradient(90deg, #660000, #330000);
+}
+
+.popup-body {
+    padding: 20px;
+    font-size: 13px;
+    color: #000;
+    text-align: center;
+    word-break: keep-all;
+    line-height: 1.5;
+}
+
+.popup-footer {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.popup-footer button {
+    background-color: #c0c0c0;
+    border-top: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #404040;
+    border-bottom: 1px solid #404040;
+    padding: 4px 15px;
+    cursor: pointer;
+    font-family: 'Gulim';
+    font-size: 12px;
+}
+.popup-footer button:active {
+    border-top: 1px solid #404040;
+    border-left: 1px solid #404040;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+}
+
+/* Post Containers */
+.post-container {
+    width: 80%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.post-title {
+    font-size: 20px;
+    color: #a09d8e;
+    border-bottom: 1px dashed #555;
+    padding-bottom: 10px;
+    width: 100%;
+    text-align: center;
+}
+.instruction {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Tutorial Stage (Canvas) */
+.scratch-container {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    background: #000;
+    border: 1px solid #333;
+    overflow: hidden;
+}
+.faint-bg-text {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    font-size: 12px;
+    color: #3a0000;
+    opacity: 0.5;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    z-index: 1;
+    letter-spacing: 2px;
+}
+.secret-text {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-size: 16px;
+    color: #d0d0d0;
+    line-height: 1.6;
+    text-align: justify;
+    z-index: 2;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+}
+#scratch-pad {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 3;
+    cursor: crosshair;
+}
+
+/* Pre2 Stage (Knob & Noise) */
+.radio-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.knob-wrapper {
+    width: 100px;
+    height: 100px;
+    background: #222;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 15px #000, 0 0 5px #111;
+}
+.knob {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #444, #111);
+    border-radius: 50%;
+    position: relative;
+    cursor: grab;
+    transform: rotate(0deg);
+}
+.knob:active {
+    cursor: grabbing;
+}
+.knob-marker {
+    width: 4px;
+    height: 15px;
+    background: #a00;
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+.noisy-text {
+    position: relative;
+    /* Noise is controlled via inline style filter from JS */
+    color: #d0d0d0;
+    filter: blur(10px) contrast(2) drop-shadow(0 0 5px red);
+    opacity: 0.2;
+    transition: filter 0.1s, opacity 0.1s;
+}
+
+/* Pre3 Stage (Blur to clear) */
+.blurry-text {
+    filter: blur(8px) contrast(1.5);
+    opacity: 0.5;
+    transition: filter 2s ease, color 2s ease, opacity 2s ease, text-shadow 2s ease;
+    color: #777;
+    position: relative;
+}
+.blurry-text.clear {
+    filter: blur(0px) contrast(1);
+    color: #d0d0d0;
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* Pre4 Stage (Login) */
+.login-container {
+    background: #111;
+    border: 1px solid #333;
+    padding: 30px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.8);
+}
+.login-container h2 {
+    font-size: 18px;
+    color: #a00;
+    margin-bottom: 10px;
+}
+.login-desc {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 20px;
+}
+.login-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.login-form input {
+    flex-grow: 1;
+    background: #000;
+    border: 1px solid #444;
+    color: #a09d8e;
+    padding: 5px 10px;
+    font-family: 'Gulim';
+}
+.login-form input:focus {
+    outline: none;
+    border-color: #a00;
+}
+.login-form button {
+    background: #330000;
+    color: #fff;
+    border: 1px solid #a00;
+    padding: 5px 15px;
+    cursor: pointer;
+}
+.login-form button:hover {
+    background: #5a0505;
+}
+#login-hint {
+    margin-top: 15px;
+    padding: 10px;
+    background: #2a0000;
+    color: #ffcccc;
+    font-size: 12px;
+    border: 1px dashed #ff0000;
+}
+.error-text {
+    color: red;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+/* Ending Sequence */
+.blood-text {
+    color: #ff0000;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0 0 10px #ff0000;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.typing-text {
+    color: #d0d0d0;
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 50px;
+}
+.typing-text::after {
+    content: '█';
+    animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* Dynamic popups from old script */
+.popup {
+    position: absolute;
+    background-color: #9e9a93;
+    border-top: 2px solid #d4d0c8;
+    border-left: 2px solid #d4d0c8;
+    border-right: 2px solid #404040;
+    border-bottom: 2px solid #404040;
+    min-width: 220px;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.6);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    animation: popupSpawn 0.1s steps(2) forwards;
+}
+
+@keyframes popupSpawn {
+    0% { transform: scale(0.9) skewX(5deg); filter: hue-rotate(90deg) brightness(1.5); }
+    100% { transform: scale(1) skewX(0); filter: hue-rotate(0) brightness(1); }
+}
+
+.popup .close-btn {
+    background-color: #c0c0c0;
+    color: #000;
+    border-top: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #404040;
+    border-bottom: 1px solid #404040;
+    font-size: 10px;
+    font-weight: bold;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.popup .close-btn:active {
+    border-top: 1px solid #404040;
+    border-left: 1px solid #404040;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사용금지</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="scanlines"></div>
+    <div id="blackout-overlay"></div>
+
+    <!-- For UE testing/debugging. UE can call setStage(stageId) from C++ / Blueprint -->
+    <nav id="debug-nav">
+        <button onclick="setStage('prologue')">프롤로그</button>
+        <button onclick="setStage('tutorial')">1교시 전</button>
+        <button onclick="setStage('pre2')">2교시 전</button>
+        <button onclick="setStage('pre3')">3교시 전</button>
+        <button onclick="setStage('pre4')">4교시 전</button>
+        <button onclick="window.showLoginHint()">웹캠 스캔(UE)</button>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1><marquee scrollamount="4">사 용 금 지</marquee></h1>
+            <div class="separator"></div>
+            <p class="subtitle">접근을 경고합니다</p>
+        </header>
+        
+        <main id="main-content">
+            
+            <!-- Stage: Prologue -->
+            <div id="stage-prologue" class="stage hidden">
+                <table class="bbs-table">
+                    <thead>
+                        <tr><th width="10%">번호</th><th width="60%">제목</th><th width="15%">작성자</th><th width="15%">날짜</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>444</td><td>절대 혼자 밤에 거울 보지마...</td><td>익명</td><td>04-25</td></tr>
+                        <tr><td>443</td><td>우리 학교 3층 복도 끝 교실 말인데</td><td>괴담러</td><td>04-25</td></tr>
+                        <tr><td>442</td><td>빨간 마스크 아직도 믿는 사람 있음?</td><td>ㅋㅋ</td><td>04-24</td></tr>
+                        <tr><td>441</td><td>(필독) 야자 시간에 조심해야 할 것들</td><td>관리자</td><td>04-24</td></tr>
+                    </tbody>
+                </table>
+                <div id="prologue-popup" class="system-popup hidden">
+                    <div class="popup-header">
+                        <span>경고</span>
+                    </div>
+                    <div class="popup-body">
+                        ※ 본 사이트 접속 후 발생하는 모든 현상에 대한 책임은 전적으로 본인에게 있습니다. 동의하십니까?
+                    </div>
+                    <div class="popup-footer">
+                        <button id="btn-agree">예</button>
+                        <button onclick="alert('도망칠 수 없습니다.')">아니오</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage: Tutorial -->
+            <div id="stage-tutorial" class="stage hidden">
+                <div class="post-container">
+                    <h2 class="post-title">[신입생 필독: 본교 생존 수칙]</h2>
+                    <p class="instruction">검은색 마커를 드래그하여 지우세요.</p>
+                    <div class="scratch-container">
+                        <div class="faint-bg-text">살려줘 도망쳐 살려줘 도망쳐 뒤돌아보지마 왜왔어 살려줘</div>
+                        <div class="secret-text">수칙 1. 본교 학생들은 수업 중 절대 뒤를 돌아보지 않습니다. 만약 앞자리 학생이 목을 180도 꺾어 당신을 쳐다보거나, 누군가 뒤로 손뼉을 친다면 절대 비명을 지르지 마십시오. 소리가 멈출 때까지 두 눈을 꽉 감고 [인간]이 아닌 척하십시오.</div>
+                        <canvas id="scratch-pad"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage: Pre2 -->
+            <div id="stage-pre2" class="stage hidden">
+                <div class="post-container">
+                    <h2 class="post-title">[모의고사 듣기평가 주의사항]</h2>
+                    <p class="instruction">마우스로 주파수 다이얼을 돌려 노이즈를 제거하세요.</p>
+                    <div class="radio-container">
+                        <div class="knob-wrapper">
+                            <div id="radio-knob" class="knob">
+                                <div class="knob-marker"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="pre2-secret" class="secret-text noisy-text">
+                        수칙 2. 본교의 듣기평가에는 [4번 문제]가 존재하지 않습니다. 만약 방송에서 4번 문제를 안내하며 기괴한 비명소리가 들린다면, 절대 문제를 풀려 하거나 주변을 두리번거리지 마십시오. 즉시 책상 아래로 몸을 숨기고 양 귀를 꽉 막으십시오.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage: Pre3 -->
+            <div id="stage-pre3" class="stage hidden">
+                <div class="post-container">
+                    <h2 class="post-title">[이동수업 시 복도 통행 수칙]</h2>
+                    <div id="pre3-secret" class="secret-text blurry-text">
+                        수칙 3. 3층 복도는 현재 폐쇄되었습니다. 복도를 지나갈 때 불이 켜져 있다면 절대 움직이지 마십시오. 형광등이 지지직거리며 꺼졌을 때만 발소리를 죽이고 걸으십시오. 그들은 빛 속에서 [인간]의 움직임을 감지합니다.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage: Pre4 -->
+            <div id="stage-pre4" class="stage hidden">
+                <div class="login-container">
+                    <h2>[ 관리자 로그인 ]</h2>
+                    <p class="login-desc">시스템 접근 권한이 필요합니다.</p>
+                    <div class="login-form">
+                        <input type="password" id="admin-pw" placeholder="비밀번호 입력..." autocomplete="off">
+                        <button id="btn-login">접속</button>
+                    </div>
+                    <div id="login-error" class="hidden error-text">권한이 없습니다.</div>
+                    <div id="login-hint" class="hidden">
+                        비밀번호 힌트: 이 사이트를 세운 초대 관리자의 이름을 입력하시오. 그는 존재하지 않는 교실을 찾다 영원히 갇혔습니다.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage: Ending -->
+            <div id="stage-ending" class="stage hidden">
+                <div id="ending-popup" class="system-popup creepy-popup">
+                    <div class="popup-header">
+                        <span>[초대 관리자의 마지막 일지]</span>
+                    </div>
+                    <div class="popup-body">
+                        "결국 내가 만든 괴담 속에 내가 갇혀버렸다. 그 애는 매일 밤 나를 찾아와서 똑같은 질문을 던진다. 대답하지 않으려고 아무리 입술을 깨물어도 소용없다. 벌써 몇 년이나 지났을까? 이제는 정말 지쳐서 한계다. 누군가 이 기록을 발견하고 내 자리를 대신해주기만을 바랄 뿐이다. 머리 위에서 선풍기가 끼긱거리는 소리가 들려온다. 저 소리가 멈추면..."
+                    </div>
+                    <div class="popup-footer">
+                        <button id="btn-exit">나가기</button>
+                    </div>
+                </div>
+
+                <div id="ending-sequence" class="hidden">
+                    <p class="blood-text">[새로운 관리자가 성공적으로 등록되었습니다.]</p>
+                    <p id="typing-text" class="typing-text"></p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
